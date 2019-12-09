@@ -11,13 +11,47 @@ try:
     db_connection = sqlite3.connect(db_name)
 except sqlite3.Error as err:
     print(err)
-
+LogIn = False
 #This function searches for Monster Cards based on Name
-def MCard_Search():
+def MCard_Search(searchCursor):
     with sqlite3.connect("Yugioh.db") as db:
+        if(searchCursor == 1):
+            searchVariable = "m_name"
+            searchBy = "Name"
+        if(searchCursor == 2):
+            searchVariable = "m_cardID"
+            searchBy = "Card ID"
+        if(searchCursor == 3):
+            searchVariable = "m_attribute"
+            searchBy = "Attribute"
+        if(searchCursor == 4):
+            searchVariable = "m_type"
+            searchBy = "Type"
+        if(searchCursor == 5):
+            searchBy = "Attack"
+            searchVariable = "m_attack"
+        if(searchCursor == 6):
+            searchBy = "Defense"
+            searchVariable = "m_defense"
+        if(searchCursor == 7):
+            searchBy = "Effect"
+            searchVariable = "m_effect"
+        if(searchCursor == 8):
+            searchBy = "Level"
+            searchVariable = "m_level"
+        if(searchCursor == 9):
+            searchBy = "Sacrifices Needed"
+            searchVariable = "m_sacrifice"
         curs = db.cursor()
-        monsName = raw_input("\nEnter card: \n")
-        query = ("SELECT * FROM Monster WHERE m_name like '%" + monsName + "%'")
+        monsName = raw_input("\nEnter " + searchBy+ ": \n")
+        if (searchVariable == "m_attack" or searchVariable == "m_defense"):
+            greaterOrLess = input("\nPress 1 for Greater, Press 2 for Less\n")
+            if (greaterOrLess == 1):
+                query = ("SELECT * FROM Monster Where " +searchVariable +" >= " + monsName )
+            if (greaterOrLess == 2):
+                query = ("SELECT * FROM Monster Where " +searchVariable +" <= " + monsName ) 
+        else:
+            query = ("SELECT * FROM Monster WHERE " +searchVariable +" like '%" + monsName + "%'")
         curs.execute(query)
         mons = curs.fetchall()
         for row in mons:
@@ -27,61 +61,155 @@ def MCard_Search():
                 row[8]) + "\n"))
 
 #This function searches for Trap Cards based on Name
-def TCard_Search():
+def TCard_Search(searchCursor):
     with sqlite3.connect("Yugioh.db") as db:
+        if(searchCursor == 1):
+            searchVariable = "t_name"
+            searchBy = "Name"
+        if(searchCursor == 2):
+            searchVariable = "t_cardID"
+            searchBy = "Card ID"
+        if(searchCursor == 3):
+            searchVariable = "t_type"
+            searchBy = "Type"
+        if(searchCursor == 4):
+            searchVariable = "t_effect"
+            searchBy = "Effect"
         curs = db.cursor()
-        trapName = raw_input("\nEnter card: \n")
-        query = ("SELECT * FROM Trap WHERE t_name like '%" + trapName + "%'")
+        trapName = raw_input("\nEnter " + searchBy+ ": \n")
+        query = ("SELECT * FROM Trap WHERE "+ searchVariable +" like '%" + trapName + "%'")
         curs.execute(query)
         traps = curs.fetchall()
         for row in traps:
-            print(str(row))
+            print("Name: " + str(row[0]) + " | Card ID: " + str(row[1]) + " | Type: " + str(
+                row[2]) + " | Effect: " + str(row[3]) + "\n")
 
 #This function searches for Spell Cards based on Name
-def SCard_Search():
+def SCard_Search(searchCursor):
     with sqlite3.connect("Yugioh.db") as db:
+        if(searchCursor == 1):
+            searchVariable = "s_name"
+            searchBy = "Name"
+        if(searchCursor == 2):
+            searchVariable = "s_cardID"
+            searchBy = "Card ID"
+        if(searchCursor == 3):
+            searchVariable = "s_type"
+            searchBy = "Attribute"
+        if(searchCursor == 4):
+            searchVariable = "s_effect"
+            searchBy = "Effect"
         curs = db.cursor()
-        spellName = raw_input("\nEnter card: \n")
-        query = ("SELECT * FROM Spell WHERE s_name like '%" + spellName + "%'")
+        spellName = raw_input("\nEnter " + searchBy+ ": \n")
+        query = ("SELECT * FROM Spell WHERE "+ searchVariable +" like '%" + spellName + "%'")
         curs.execute(query)
         spells = curs.fetchall()
         for row in spells:
-            print(str(row))
+            print("Name: " + str(row[0]) + " | Card ID: " + str(row[1]) + " | Type: " + str(
+                row[2]) + " | Effect: " + str(row[3]) + "\n")
 
 #This function searches for Spell Cards based on Name
 def Deck_Search():
     with sqlite3.connect("Yugioh.db") as db:
         curs = db.cursor()
         DeckName = raw_input("\nEnter Name: \n")
-        query = ("SELECT * FROM Contains WHERE d_name like '%" + DeckName + "%'")
+        query = ("SELECT * FROM Contains WHERE d_name like '%" + DeckName + "%' ORDER BY d_name desc")
         curs.execute(query)
         Decks = curs.fetchall()
         for row in Decks:
-            print(str(row))
+            print("Deck Name: " + str(row[0]) + " | Card Name: " + str(row[1]) + " | Card ID: " + str(
+                row[2]) + "\n")
+
+def MonsterSearch():
+    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Attribute, 4 by Type, 5 by Attack, 6 by Defense, 7 by Effect, 8 by Level, 9 by Sacrifice:\n")
+    MCard_Search(searchCursor)
+
+def TrapSearch():
+    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Type, 4 by Effect")
+    TCard_Search(searchCursor)
+
+def SpellSearch():
+    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Type, 4 by Effect")
+    SCard_Search(searchCursor)
+
+def updateDeckAdd(usernameEnter, cardNameOrID):
+        #We are inputting the card Name
+        with sqlite3.connect("Yugioh.db") as db:
+            curs = db.cursor()
+            query = ("INSERT INTO Contains VALUES((SELECT d_name FROM Decks WHERE d_owner = '" + usernameEnter +"'), '"+ cardNameOrID+ "', (SELECT c_cardID FROM Cards WHERE c_name = '"+ cardNameOrID+"')) ")
+            curs.execute(query)
+
+def updateDeckRem(usernameEnter, cardNameOrID):
+    with sqlite3.connect("Yugioh.db") as db:
+        curs = db.cursor()
+        query = ("DELETE FROM Contains where c_name = '"+ cardNameOrID +"' and d_name = (SELECT d_name from Decks where d_owner = '" + usernameEnter + "')")
+        curs.execute(query)
+
+
+
+def updateDeck(usernameEnter):
+    DeckCursor = input("\nPress 1 to Add Cards, Press 2 to Remove Cards\n")
+    cardNameOrID = raw_input("\nPlease Enter Card Name: \n")
+    if (DeckCursor == 1):
+        updateDeckAdd(usernameEnter, cardNameOrID)
+    if (DeckCursor == 2):
+        updateDeckRem(usernameEnter, cardNameOrID)
+
+def LoggedInUser(usernameEnter):
+    logInSelect = input("\n\nWelcome " + usernameEnter + ". What would you like to do?\nPress 1 to update Deck, press 2 to edit Personal Info.\n")
+    if(logInSelect == 1):
+        updateDeck(usernameEnter)
+    # if(logInSelect == 2):
+    #     updateInfo(usernameEnter)
+        
+
+def UserLogin():
+    usernameEnter = raw_input("\nPlease enter your Username\n")
+    with sqlite3.connect("Yugioh.db") as db:
+        curs = db.cursor()
+        query = ("Select p_username FROM Players where p_username like '" + usernameEnter + "'")
+        curs.execute(query)
+        UN = curs.fetchall()
+        for row in UN:
+            if (str(row[0]) == usernameEnter):
+                LoggedInUser(usernameEnter)
+
+def UserRegister():
+    print ("test")
+
+
+
+def UserEnter():
+    searchCursor = input("\nPress 1 to Log in or 2 to Sign up.\n")
+    if (searchCursor == 1):
+        UserLogin()
+    if (searchCursor == 2):
+        UserRegister()
 
 
 #Start of Output, will cycle through START: for as long as the user wants
 db_connection = sqlite3.connect(db_name)
+
 print("\nWelcome to the Yugioh Database: What would you like to do? \n\n")
 #START:
 while True:
     if item == 100:
-        item = input("\nPress 1 to search the database, Press 2 to log in, Press 3 enter admin mode\n")
+        item = input("\nPress 1 to search the database, Press 2 to log in\n")
         if (item == 1):
             print("\nWhat would you like to search for?")
-            selection = input("\nPress 1 to search for Cards, Press 2 to search for Decks, Press 3 to search for Players, Press 0 to return to Main Screen.\n")
+            selection = input("\nPress 1 to search for Cards, Press 2 to search for Decks, Press 0 to return to Main Screen.\n")
             if(selection == 0):
                 item = 100
             if(selection == 1):
                 CardSearch = input("\nPress 1 to search for Monster Cards, Press 2 to search for Trap Cards, Press 3 to search for Spell Cards, Press 0 to return to Main Screen.\n")
                 if (CardSearch == 1):
-                    MCard_Search()
+                    MonsterSearch()
                     item = 100
                 if(CardSearch == 2):
-                    TCard_Search()
+                    TrapSearch()
                     item = 100
                 if(CardSearch == 3):
-                    SCard_Search()
+                    SpellSearch()
                     item = 100
                 if(CardSearch == 0):
                     item = 100
@@ -89,6 +217,8 @@ while True:
                 Deck_Search()
                 item = 100
         if (item == 2):
-            print("\nWe are logging in now")
+                UserEnter()
+                item = 100
+            
         if (item == 3):
             print("\nWe are in admin mode")
