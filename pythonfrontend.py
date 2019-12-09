@@ -2,10 +2,10 @@ import sqlite3
 import os.path
 
 #Initial Database connection - Need absolute path to connect to the same database
-BASE_DIR = os.path.dirname(os.path.abspath("D:/Schoolwork/CSE111/Phase3/Yugioh.db"))
+BASE_DIR = os.path.dirname(os.path.abspath("C:/Documents/CSE111/Project/Yugioh.db"))
 db_path = os.path.join(BASE_DIR, "Yugioh.db")
 db_connection = None  # connection to the database, empty for now
-db_name = "D:\\Schoolwork\\CSE111\\Phase3\\Yugioh.db"  # exact path to database
+db_name = "C:\\Documents\\CSE111\\Project\\Yugioh.db"  # exact path to database
 item = 100
 try:
     db_connection = sqlite3.connect(db_name)
@@ -49,7 +49,7 @@ def MCard_Search(searchCursor):
             if (greaterOrLess == 1):
                 query = ("SELECT * FROM Monster Where " +searchVariable +" >= " + monsName )
             if (greaterOrLess == 2):
-                query = ("SELECT * FROM Monster Where " +searchVariable +" <= " + monsName ) 
+                query = ("SELECT * FROM Monster Where " +searchVariable +" <= " + monsName )
         else:
             query = ("SELECT * FROM Monster WHERE " +searchVariable +" like '%" + monsName + "%'")
         curs.execute(query)
@@ -125,11 +125,11 @@ def MonsterSearch():
     MCard_Search(searchCursor)
 
 def TrapSearch():
-    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Type, 4 by Effect")
+    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Type, 4 by Effect\n")
     TCard_Search(searchCursor)
 
 def SpellSearch():
-    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Type, 4 by Effect")
+    searchCursor = input("\nHow would you like to search?\n\nPress 1 to search by Name, 2 by ID, 3 by Type, 4 by Effect\n")
     SCard_Search(searchCursor)
 
 def updateDeckAdd(usernameEnter, cardNameOrID):
@@ -161,7 +161,7 @@ def LoggedInUser(usernameEnter):
         updateDeck(usernameEnter)
     # if(logInSelect == 2):
     #     updateInfo(usernameEnter)
-        
+
 
 def UserLogin():
     usernameEnter = raw_input("\nPlease enter your Username\n")
@@ -219,6 +219,6 @@ while True:
         if (item == 2):
                 UserEnter()
                 item = 100
-            
+
         if (item == 3):
             print("\nWe are in admin mode")
