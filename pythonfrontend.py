@@ -186,6 +186,52 @@ def UserEnter():
     if (searchCursor == 2):
         UserRegister()
 
+def adminAddorDel(selectionA, selectionB):
+    with sqlite3.connect("Yugioh.db") as db:
+        curs = db.cursor()
+        if(selectionA == 1):
+                if(selectionB == 1):
+                    monName = raw_input("\nPlease enter Monster Name:\n")
+                    monID = raw_input("\nPlease enter Card ID:\n")
+                    monAttr = raw_input("\nPlease enter Monster Attribute:\n")
+                    monType = raw_input("\nPlease enter Monster Type:\n")
+                    monAttack = raw_input("\nPlease enter Monster Attack:\n")
+                    monDefense = raw_input("\nPlease enter Monster Defense:\n")
+                    monEffect = raw_input("\nIs it an effect monster? Press 1 for Yes, 2 for No:\n")
+                    monLevel = raw_input("\nPlease enter Monster Level:\n")
+                    monSacrifices = raw_input("\nPlease enter how many sacrifices are needed:\n")
+                    query = ("INSERT INTO Monster VALUES('"+monName+"', '"+monID+"', '"+monAttr+"', '"+monType+"', "+monAttack+", "+monDefense+", "+monEffect+", "+monLevel+", "+monSacrifices+")")
+                    curs.execute(query)
+                    #add monster
+                if(selectionB == 2):
+                    #add spell
+                    spellName = raw_input("\nPlease enter Spell Name:\n")
+                    spellID = raw_input("\nPlease enter Card ID:\n")
+                    spellType = raw_input("\nPlease enter Spell Type:\n")
+                    spellEff = raw_input("\nPlease enter Spell Effect:\n")
+                    query = ("INSERT INTO Spell VALUES('"+spellName+"', '"+spellID+"', '"+spellType+"', '"+spellEff+"')")
+                    curs.execute(query)
+                if(selectionB == 3):
+                    #add trap
+                    tName = raw_input("\nPlease enter Trap Name:\n")
+                    tID = raw_input("\nPlease enter Card ID:\n")
+                    tType = raw_input("\nPlease enter Trap Type:\n")
+                    tEff = raw_input("\nPlease enter Trap Effect:\n")
+                    query = ("INSERT INTO Trap VALUES('"+tName+"', '"+tID+"', '"+tType+"', '"+tEff+"')")
+                    curs.execute(query)
+        if(selectionA == 2):
+            CardName = raw_input("\nPlease Enter Card Name:\n")
+            query = ("DELETE FROM Cards WHERE c_name = '"+CardName+"'")
+            curs.execute(query)
+
+
+
+
+def AdminMode():
+    selectionA = input("\nPress 1 to add cards, Press 2 to delete cards\n")
+    selectionB = input("\nPress 1 for Monster Cards, 2 for Spell Cards, 3 for Trap Cards\n")
+    adminAddorDel(selectionA, selectionB)
+
 
 #Start of Output, will cycle through START: for as long as the user wants
 db_connection = sqlite3.connect(db_name)
@@ -194,7 +240,7 @@ print("\nWelcome to the Yugioh Database: What would you like to do? \n\n")
 #START:
 while True:
     if item == 100:
-        item = input("\nPress 1 to search the database, Press 2 to log in\n")
+        item = input("\nPress 1 to search the database, Press 2 to log in, Press 3 to Enter Admin Mode.\n")
         if (item == 1):
             print("\nWhat would you like to search for?")
             selection = input("\nPress 1 to search for Cards, Press 2 to search for Decks, Press 0 to return to Main Screen.\n")
@@ -221,4 +267,5 @@ while True:
                 item = 100
 
         if (item == 3):
-            print("\nWe are in admin mode")
+            AdminMode()
+            item = 100
